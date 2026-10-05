@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "amrkhaled100", email = "amrkhalednoser327@example.com" }
 ]
-requires-python = ">=3.13"
+requires-python = ">=3.10"
 dependencies = [
     "chromadb>=1.5.9",
     "fastembed>=0.8.1",

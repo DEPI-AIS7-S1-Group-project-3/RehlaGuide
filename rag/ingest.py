@@ -16,30 +16,36 @@ def build_vector_store():
     documents = []
 
     for item in raw_data:
+    
         text_content = (
             f"Name: {item.get('name', '')}\n"
-            f"City: {item.get('city', '')}\n"
+            f"Region/City: {item.get('region', item.get('city', ''))}\n"
             f"Category: {item.get('category', '')}\n"
-            f"Description: {item.get('description', '')}"
-        )
-        
+            f"Description: {item.get('description', '')}\n"
+            f"Opening Hours: {item.get('opening_hours', '')}\n"
+            f"Egyptian Adult Price (EGP): {item.get('ticket_price_egyptian_adult_egp', 0)}\n"
+            f"Foreigner Adult Price (EGP): {item.get('ticket_price_foreigner_adult_egp', 0)}\n"
+            f"Estimated Visit Duration (Minutes): {item.get('estimated_visit_duration_min', 0)}"
+        ).strip()
+
+       
+        duration_hours = float(item.get("estimated_visit_duration_min", 0)) / 60.0
+
+       
         metadata = {
             "id": int(item.get("id", 0)),
             "name": str(item.get("name", "")),
-            "city": str(item.get("city", "")),
-            "region": str(item.get("region", "")),
+            "region": str(item.get("region", item.get("city", ""))),
             "category": str(item.get("category", "")),
-            "opening_hours": str(item.get("opening_hours", "")),
-            "ticket_price_foreigner_adult_egp": float(item.get("ticket_price_foreigner_adult_egp", 0)),
             "ticket_price_egyptian_adult_egp": float(item.get("ticket_price_egyptian_adult_egp", 0)),
-            "estimated_visit_duration_min": int(item.get("estimated_visit_duration_min", 0)),
-            "source_url": str(item.get("source_url", "")),
-            "last_verified": str(item.get("last_verified", ""))
+            "ticket_price_foreigner_adult_egp": float(item.get("ticket_price_foreigner_adult_egp", 0)),
+            "estimated_duration_hours": duration_hours
         }
 
         doc = Document(page_content=text_content, metadata=metadata)
         documents.append(doc)
 
+    
     embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
     vector_store = Chroma.from_documents(
         documents=documents,

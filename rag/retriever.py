@@ -3,12 +3,12 @@ from typing import List, Optional, Dict, Any
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 
-DB_PATH = Path("data/chroma_db")
+from rag.config import CHROMA_DB_DIR, EMBEDDING_MODEL_NAME, DEFAULT_TOP_K
 
 def get_vector_store():
-    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL_NAME)
     return Chroma(
-        persist_directory=str(DB_PATH),
+        persist_directory=str(CHROMA_DB_DIR),
         embedding_function=embeddings
     )
 
@@ -17,7 +17,7 @@ def search_attractions(
     region: Optional[str] = None,
     category: Optional[str] = None,
     max_duration: Optional[float] = None,
-    top_k: int = 5
+    top_k: int = DEFAULT_TOP_K
 ) -> List[Dict[str, Any]]:
     vector_store = get_vector_store()
 
@@ -36,7 +36,6 @@ def search_attractions(
     else:
         where_filter = None
 
-   
     results = vector_store.similarity_search_with_score(
         query=query,
         k=top_k,
@@ -54,7 +53,6 @@ def search_attractions(
     return formatted_results
 
 if __name__ == "__main__":
-    
     print("Testing Retriever Contract...")
     test_results = search_attractions(
         query="famous ancient royal monuments and mummies",
